@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>todo</title>
+        <script crossorigin src="https://unpkg.com/react@17/umd/react.development.js"></script>
+        <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.25.0/babel.min.js"></script>
+        <link rel="stylesheet" href="styles.css">
+    </head>
+    <body>
+        <div id="main"></div>
+        <script type="text/babel">
+            function MyApp (){
+                const [todo, setTodo] = React.useState({
+                    id: Math.random(),
+                    title: '',
+                    done: false
+                });
+                const [todos, setTodos] = React.useState([])
+
+                function addHandler (){
+                    if(todo.title.trim() === ''){
+                        console.log('Поле пустое')
+                    }else{
+                        setTodos([...todos, todo]);
+                        setTodo({
+                            title: ''
+                        })
+                        console.log(todo);
+                        console.log(todos);
+                    }
+                }
+
+                function todoHandler (event){
+                    setTodo({
+                        id: Math.random(),
+                        title: event.target.value,
+                        done: false
+                    });
+                    // console.log(event.target.value)
+                }
+
+                const handleToggle = (id) => {
+                    setTodos([
+                        ...todos.map((todo) =>
+                            todo.id === id ? { ...todo, done: !todo.done } : {...todo }
+                        )
+                    ])
+                }
+
+                const removeTask = (id) => {
+                    setTodos([...todos.filter((todo) => todo.id !== id)])
+                }
+
+                return (
+                    <div>
+                        <input autoFocus type="text" value={todo.title} onChange={todoHandler}/>
+                        <button onClick={addHandler}>Add</button>
+                        <hr/>
+                        <div className="todos-block">
+                        {todos.map((element) => <ToDoItem
+                            todo={element}
+                            key={element.id}
+                            toggleTodo={handleToggle}
+                            removeTask={removeTask}
+                            />)}
+                        </div>
+                    </div>
+                )
+            }
+
+            function ToDoItem({ todo, toggleTodo, removeTask }) {
+
+                return (
+                    <div key={todo.id} className="todo-item">
+                        <div
+                            className={todo.done ? "todo-title crossTodo" : "todo-title"}
+                            onClick={() => toggleTodo(todo.id)}
+                        >
+                            {todo.title}
+                        </div>
+                        <button className="todo-delete" onClick={() => removeTask(todo.id)}>
+                            Delete
+                        </button>
+                    </div>
+                )
+            }
+
+
+            ReactDOM.render(<MyApp/>, document.getElementById('main'));
+        </script>
+    </body>
+</html>
